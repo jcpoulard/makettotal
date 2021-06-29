@@ -12,6 +12,22 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'authManager' => [
+            'class' =>'yii\rbac\DbManager', //'yii\rbac\PhpManager', // or use 'yii\rbac\DbManager'
+        ],
+        'as access' => [
+        'class' => 'mdm\admin\components\AccessControl',
+        'allowActions' => [
+            'site/*',
+            'admin/*',
+            'some-controller/some-action',
+            // The actions listed here will be allowed to everyone including guests.
+            // So, 'admin/*' should not appear here in the production, of course.
+            // But in the earlier stages of your development, you may probably want to
+            // add a lot of actions here until you finally completed setting up rbac,
+            // otherwise you may not even take a first step.
+        ]
+    ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'hZuDyVrRCUiL8AIptcn2U9R7f126rfXu',
@@ -20,9 +36,16 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
+            'identityClass' => 'mdm\admin\models\User',
+            'loginUrl' => ['admin/user/login'],
+        ],
+        /*
+        'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
         ],
+         * 
+         */
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -51,6 +74,23 @@ $config = [
             ],
         ],
         */
+    ],
+    'modules' => [
+        'admin' => [
+            'class' => 'mdm\admin\Module',
+            'controllerMap' => [
+            'assignment' => [
+                'class' => 'mdm\admin\controllers\AssignmentController',
+                'userClassName' => 'app\models\User',
+                'idField' => 'user_id'
+            ],
+            'other' => [
+                'class' => 'path\to\OtherController', // add another controller
+            ],
+        ],
+         
+        ]
+       
     ],
     'params' => $params,
 ];
